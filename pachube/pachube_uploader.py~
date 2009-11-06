@@ -1,0 +1,17 @@
+import httplib
+
+class PachubeUploader(object):
+
+    def __init__(self, feed, key):
+        self._url = feed
+        self._key = key
+        
+    def putCSV(self,data):
+        conn = httplib.HTTPConnection('www.pachube.com:80')
+        feedURL = '/api/' + self._url + '.csv'
+        conn.request('PUT', feedURL, data, {'X-PachubeApiKey':self._key})
+        resp = conn.getresponse()
+        if resp.status != 200:
+            print "That shit didn't work"
+        resp.read()
+        conn.close()
