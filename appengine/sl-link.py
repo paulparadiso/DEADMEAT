@@ -6,54 +6,53 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.ext import db
 
+main_key = "agdzbC1saW5rchMLEglEaXJlY3Rpb24iBG1haW4M"
+
 class Direction(db.Model):
   label = db.StringProperty()
   direction = db.StringProperty()
+  heartrate = db.StringProperty()
 
 class MainPage(webapp.RequestHandler):
   def get(self):
-    greetings_query = Greeting.all().order('-date')
-    greetings = greetings_query.fetch(10)
-
-    if users.get_current_user():
-      url = users.create_logout_url(self.request.uri)
-      url_linktext = 'Logout'
-    else:
-      url = users.create_login_url(self.request.uri)
-      url_linktext = 'Login'
-
-    template_values = {
-      'greetings': greetings,
-      'url': url,
-      'url_linktext': url_linktext,
-      }
-
     path = os.path.join(os.path.dirname(__file__), 'index.html')
-    self.response.out.write(template.render(path, template_values))
+    self.response.out.write('zoom')
 
 class SetData(webapp.RequestHandler):
   def get(self):
-    theWord = self.request.get("word")
-    theNumber = self.request.get("height")
+    obj = db.get(db.Key(main_key))
+    args = self.request.arguments()
+    for a in args:
+      if a == "dir":
+        obj.direction = self.request.get("dir")
+      if a == "hr":
+        obj.heartrate = self.request.get("hr")
+    obj.put()
+
+class GetData(webapp.RequestHandler):
+  def get(self):
+    obj = db.get(db.Key(main_key))
+    args = self.request.arguments()
     self.response.headers['Content-Type'] = 'text/plain'
-    self.response.out.write(theWord + '\n')
-    self.response.out.write(theNumber)
+    for a in args:
+      if a == "dir":
+        self.response.out.write(obj.direction)
+      if a == "hr":
+        self.response.out.write(obj.heartrate)
 
-class Guestbook(webapp.RequestHandler):
-  def post(self):
-    greeting = Greeting()
-
-    if users.get_current_user():
-      greeting.author = users.get_current_user()
-
-    greeting.content = self.request.get('content')
-    greeting.put()
-    self.redirect('/')
+class Init(webapp.RequestHandler):
+  def get(self):
+    d = Direction(key_name = "main")
+    d.put()
+    d_key = d.key() 
+    self.response.headers['Content-Type'] = 'text/plain'
+    self.response.out.write(d_key)
 
 application = webapp.WSGIApplication(
                                      [('/', MainPage),
-                                      ('/sign', Guestbook),
-                                     ('/set_data',SetData)],
+                                     ('/set_data',SetData),
+                                      ('/get_data',GetData),
+                                      ('/init', Init)],
                                      debug=True)
 
 def main():
