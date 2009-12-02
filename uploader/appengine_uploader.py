@@ -44,12 +44,13 @@ class Uploader(object):
 
     def putHR(self,data):
         conn = httplib.HTTPConnection('sl-link.appspot.com:80')
-        hr = "set_data?hr=" + data
+        hr = "/set_data?hr=" + data
+        #print "putting rate = " + data
         conn.request('GET', hr)
-        resp = conn.getresponse()
-        if resp.status != 200:
-            print "That shit didn't work"
-        resp.read()
+        #resp = conn.getresponse()
+        #if resp.status != 200:
+        #    print "That shit didn't work"
+        #resp.read()
         conn.close()
 
     def getDIR(self):
