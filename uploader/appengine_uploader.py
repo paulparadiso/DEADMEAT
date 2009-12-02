@@ -75,10 +75,19 @@ class Timer():
             return 1
         else:
             return 0
+
+class LCDScreen():
+    
+    def __init__(self,port):
+        self._ser = serial.Serial(port,9600)
+        
+    def write(msg):
+        self._ser.write(msg)
         
 
 if __name__ == "__main__":
     u = Uploader()
+    lcd = LCDScreen("/dev/ttyUSB0")
     ck_serial = True
     for arg in sys.argv:
         if arg == "dead":
@@ -100,4 +109,5 @@ if __name__ == "__main__":
             if(r != direction):
                 direction = r
                 print r
+                lcd.write(r)
             
