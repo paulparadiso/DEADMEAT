@@ -41,12 +41,18 @@ LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 int onOffPin = 13;
 int blinkRate = 500;
+int timeOn = 3000;
 int lastBlink = 0;
 int isOn = 0;
 char currMsg[16];
+char nextMsg[16];
+int bReading = 0;
+int bHaveNewMsg = 0;
+int index = 0;
 
 void setup() {
   // set up the LCD's number of rows and columns: 
+  Serial.begin(9600);
   lcd.begin(16, 2);
   pinMode(onOffPin, OUTPUT);
   // Print a message to the LCD.
@@ -57,23 +63,61 @@ void setup() {
 }
 
 void loop() {
-  // set the cursor to column 0, line 1
-  // (note: line 1 is the second row, since counting begins with 0):
   //checkBlink();
-  Serial.begin(9600);
+  checkOnOff();
+  checkSerial();
+  if(bHaveNewMsg){
+    writeNewMsg();
+  }
+}
+
+void writeNewMsg(){
+  digitalWrite(onOffPin,HIGH);
+  lcd.clear();
+  lcd.print(currMsg); 
+  lcd.noCursor();
+  lastBlink = millis();
+  isOn = 1;
+  bHaveNewMsg = 0;
+}
+
+void checkOnOff(){
+  if(isOn){
+    if((millis() - lastBlink)  > timeOn){
+      digitalWrite(onOffPin, LOW);
+      lcd.clear();
+      isOn = 0;
+    }
+  }
+}
+
+void checkSerial(){
+  if(Serial.available()){
+    //Serial.print(Serial.read());
+    if(bReading){
+      nextMsg[index] = Serial.read();
+      Serial.print(nextMsg[index]);
+      if(nextMsg[index] == '\r'){
+        memset(currMsg,0,16);
+        strcpy(currMsg,nextMsg);
+        memset(nextMsg,0,16);
+        index = 0;
+        bHaveNewMsg = 1;
+        bReading = 0;
+        Serial.print("Stopping Read.\n");
+      } else {
+        index = (index + 1) % 16;
+      }
+    } else {
+      if(Serial.read() == 'b'){
+         bReading = 1;
+         Serial.print("Beginning to Read.\n");
+      }
+    }
+  }
 }
  
 void checkBlink(){
-  if(Serial.available()){
-    memset(currMsg,0,16);
-    char c = 1;
-    int index = 0;
-    while(c > 0){
-      c = Serial.read();
-      currMsg[index] = c;
-    }
-    lcd.print(currMsg);
-  }
   int now = millis();
   if (now - lastBlink > blinkRate){
     if(isOn){
