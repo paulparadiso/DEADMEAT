@@ -12,6 +12,8 @@ class Direction(db.Model):
   label = db.StringProperty()
   direction = db.StringProperty()
   heartrate = db.StringProperty()
+  player1_pos = db.StringProperty()
+  player2_pos = db.StringProperty()
 
 class MainPage(webapp.RequestHandler):
   def get(self):
@@ -27,6 +29,10 @@ class SetData(webapp.RequestHandler):
         obj.direction = self.request.get("dir")
       if a == "hr":
         obj.heartrate = self.request.get("hr")
+      if a == "p1p":
+        obj.player1_pos = self.request.get("p1p")
+      if a == "p2p":
+        obj.player2_pos = self.request.get("p2p")
     obj.put()
 
 class GetData(webapp.RequestHandler):
@@ -39,6 +45,10 @@ class GetData(webapp.RequestHandler):
         self.response.out.write(obj.direction)
       if a == "hr":
         self.response.out.write(obj.heartrate)
+      if a == "p1p":
+        self.response.out.write(obj.player1_pos)
+      if a == "p2p":
+        self.response.out.write(obj.player2_pos)
 
 class Init(webapp.RequestHandler):
   def get(self):
