@@ -63,7 +63,8 @@ void setup() {
   lcd.begin(16, 2);
   pinMode(onOffPin, OUTPUT);
   // Print a message to the LCD.
-  lcd.print("Get Set!");
+  //lcd.autoscroll();
+  lcd.print("Don't Steal!");
   digitalWrite(onOffPin, HIGH);
   isOn = 1;
   memset(currMsg,0,16);
@@ -79,13 +80,13 @@ void loop() {
 }
 
 void writeNewMsg(){
-  digitalWrite(onOffPin,HIGH);
   lcd.clear();
-  lcd.print(currMsg); 
   lcd.noCursor();
+  lcd.print(currMsg); 
   lastBlink = millis();
   isOn = 1;
   bHaveNewMsg = 0;
+  digitalWrite(onOffPin,HIGH);
 }
 
 void checkOnOff(){
