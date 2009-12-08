@@ -10,8 +10,10 @@ main_key = "agdzbC1saW5rchMLEglEaXJlY3Rpb24iBG1haW4M"
 
 class Direction(db.Model):
   label = db.StringProperty()
-  direction = db.StringProperty()
-  heartrate = db.StringProperty()
+  player1_dir = db.StringProperty()
+  player2_dir = db.StringProperty()
+  player1_hr = db.StringProperty()
+  player2_hr = db.StringProperty()
   player1_pos = db.StringProperty()
   player2_pos = db.StringProperty()
 
@@ -25,10 +27,14 @@ class SetData(webapp.RequestHandler):
     obj = db.get(db.Key(main_key))
     args = self.request.arguments()
     for a in args:
-      if a == "dir":
-        obj.direction = self.request.get("dir")
-      if a == "hr":
-        obj.heartrate = self.request.get("hr")
+      if a == "p1d":
+        obj.player1_dir = self.request.get("p1d")
+      if a == "p2d":
+        obj.player2_dir = self.request.get("p2d")
+      if a == "p1hr":
+        obj.player1_hr = self.request.get("p1hr")
+      if a == "p2hr":
+        obj.player2_hr = self.request.get("p2hr")
       if a == "p1p":
         obj.player1_pos = self.request.get("p1p")
       if a == "p2p":
@@ -50,6 +56,12 @@ class GetData(webapp.RequestHandler):
       if a == "p2p":
         self.response.out.write(obj.player2_pos)
 
+class GetAll(webapp.RequestHandler):
+  def get(self):
+    obj = db.get(db.Key(main_key))
+    out = obj.player1_pos + "," + obj.player1_hr + "," + obj.player2_pos + "," + obj.player2_hr
+    self.response.out.write(out)
+
 class Init(webapp.RequestHandler):
   def get(self):
     d = Direction(key_name = "main")
@@ -62,8 +74,9 @@ application = webapp.WSGIApplication(
                                      [('/', MainPage),
                                      ('/set_data',SetData),
                                       ('/get_data',GetData),
-                                      ('/init', Init)],
-                                     debug=True)
+                                      ('/init', Init),
+                                      ('/get_all',GetAll)],
+                                      debug=True)
 
 def main():
   run_wsgi_app(application)
