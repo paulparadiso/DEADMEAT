@@ -62,6 +62,12 @@ class GetAll(webapp.RequestHandler):
     out = obj.player1_pos + "," + obj.player1_hr + "," + obj.player2_pos + "," + obj.player2_hr
     self.response.out.write(out)
 
+class GetDirs(webapp.RequestHandler):
+  def get(self):
+    obj = db.get(db.Key(main_key))
+    out = obj.player1_dir + "," + obj.player2_dir
+    self.response.out.write(out)
+
 class Init(webapp.RequestHandler):
   def get(self):
     d = Direction(key_name = "main")
@@ -75,7 +81,8 @@ application = webapp.WSGIApplication(
                                      ('/set_data',SetData),
                                       ('/get_data',GetData),
                                       ('/init', Init),
-                                      ('/get_all',GetAll)],
+                                      ('/get_all',GetAll),
+                                      ('/get_dirs',GetDirs)],
                                       debug=True)
 
 def main():

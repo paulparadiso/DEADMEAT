@@ -37,9 +37,9 @@
 #include <LiquidCrystal.h>
 
 // initialize the library with the numbers of the interface pins
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+LiquidCrystal lcd(8, 7, 6, 5, 4, 3);
 
-int onOffPin = 13;
+int onOffPin = 9;
 int blinkRate = 500;
 int timeOn = 3000;
 int lastBlink = 0;
@@ -49,10 +49,11 @@ char nextMsg[16];
 int bReading = 0;
 int bHaveNewMsg = 0;
 int index = 0;
+int anaPin = 0;
 
 void setup() {
   // set up the LCD's number of rows and columns: 
-  Serial.begin(9600);
+  Serial.begin(57100);
   lcd.begin(16, 2);
   pinMode(onOffPin, OUTPUT);
   // Print a message to the LCD.
@@ -70,6 +71,9 @@ void loop() {
   if(bHaveNewMsg){
     writeNewMsg();
   }
+  //int reader = analogRead(0);
+  //Serial.print(reader/4);
+  //Serial.print('\n');
 }
 
 void writeNewMsg(){
