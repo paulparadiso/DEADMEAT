@@ -53,7 +53,7 @@ int anaPin = 0;
 
 void setup() {
   // set up the LCD's number of rows and columns: 
-  Serial.begin(9600);
+  Serial.begin(57100);
   lcd.begin(16, 2);
   pinMode(onOffPin, OUTPUT);
   // Print a message to the LCD.
