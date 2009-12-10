@@ -16,7 +16,7 @@ int leftPin = 11;
 int walkPin = 12;
 int rightPin = 13;
 int timeOn = 3000;
-int lastOn = 0;
+long lastOn = 0;
 int onPin;
 int bIsOn = 0;
 
@@ -66,13 +66,15 @@ void loop(){
 
 void checkSerial(){
   if(Serial.available()){
-    int on = (int)(Serial.read()  - 87);
-    if(on >= stopPin && on <= rightPin){
-      turnOnPin(on);
+    unsigned char on = Serial.read();
+    int o = ((int)on) - 87;
+    if(o >= stopPin && o <= rightPin){
+      turnOnPin(o);
     }
-    if(on == 14){
+    if(on == 'e'){
       Serial.println(angle);
     }
+    //Serial.print(on);
   }
 }
 
