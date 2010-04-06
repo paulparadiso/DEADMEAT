@@ -1,18 +1,4 @@
-#include <math.h>
-#include <ks0108.h>
-#include "Arial14.h"         // proportional font
-#include "SystemFont5x7.h"   // system font
-#include "rotateRight.h"     // bitmap 
-#include "rotateLeft.h"
-#include "walkForward.h"
-#include "deadmeat.h"
-#include "winner.h"
-#include "getSet.h"
-#include "jump.h"
-#include "go.h"
-#include "punch.h"
-#include "kick.h"
-#include "block.h"
+#include <SoftwareSerial.h>
 
 int stopPin = 10;
 int leftPin = 11;
@@ -29,42 +15,81 @@ byte DIO_pin = 12;
 
 int X_Data = 0;
 int Y_Data = 0;
-int angle;
+int angle = 10;
 
-//from glcd example
 unsigned long startMillis;
 unsigned int loops = 0;
 unsigned int iter = 0;
 
-uint8_t* sayings[] = {
-  rotateLeft,
-  rotateRight,
-  walkForward,
-  jump,
-  deadmeat,
-  winner,
-  punch,
-  go,
-  getSet,
-  kick,
-  block};
+int txPin = 5;
+int rxPin = 4;
 
-int sayingsStart = 102;
-int numSayings = 11;
+SoftwareSerial SpeakJetSerial =  SoftwareSerial(rxPin, txPin);
+
+int wordsStart = 102;
+int numWords = 12;
+//20, 96, 21, 114, 22, 88, 23, 5,
+char forward[] = {88, 5, 186, 7, 153, 7, 147, 151, 176,0}; 
+char right[]   = {88, 148, 7, 155, 191,0};
+char died[]    = {88, 14, 175, 8, 157, 174,0};
+char stp[]     = {88,187, 191, 8, 136, 8, 199,0};
+char walk[]    = {88, 5, 147, 8, 136, 8, 197,0};
+char left[]    = {88, 5, 145, 131, 186, 191,0};
+char turn[]    = {88, 8, 191, 151, 141,0};
+char have[]    = {88, 5, 183, 8, 132, 166,0};
+//char are[]     = {20, 96, 21, 114, 22, 88, 23, 5, 140, 8, 128, 191};
+char are[]     = {88,8,152,0};
+char dead[]    = {88, 23, 5, 174, 8, 131, 174,0};
+char meat[]    = {88, 140,154, 191,0};
+char you[]     = {88, 23, 9,183, 160,0};
+char won[]     = {88,23, 8, 147,135, 142,0};
+
+char walkForward[] = {88, 5, 147, 8, 136, 8, 197, 186, 7, 153, 7, 147, 151, 176,0};
+char deadmeat[] = {88, 23, 9,183, 160, 8,152,174, 8, 131, 174,140,154, 191,0};
+char youhavedied[] = {88, 23, 9,183, 160, 183, 8, 132, 166, 14, 175, 8, 157, 174,0};
+char turnLeft[] = {88, 8, 191, 151, 141, 145, 131, 186, 191,0};
+char turnRight[] = {88, 8, 191, 151, 141, 148, 7, 155, 191,0};
+char youhavewon[] = {88, 23, 9,183, 160, 183, 8, 132, 166, 8, 147,135, 142,0};
+
+//char *words[] = {
+//  forward,
+//  right,
+//  died,
+//  stp,
+//  walk,
+//  left,
+//  turn,
+//  have,
+//  are,
+//  dead,
+//  meat,
+//  you};f
+
+/*
+sayings:
+"turn left" 
+"turn right"
+"walk forward"
+"stop"
+"you have died"
+"you are dead meat"
+*/
 
 void setup(){
   Serial.begin(115200);
   
+  //Setup pins for compass
   pinMode(EN_pin, OUTPUT);
   pinMode(CLK_pin, OUTPUT);
   pinMode(DIO_pin, INPUT);
+  
+  //Setup output pin and software serial for 
+  pinMode(txPin, OUTPUT);
+  SpeakJetSerial.begin(9600);
 
   HM55B_Reset();
   
-  GLCD.Init(NON_INVERTED);   // initialise the library, non inverted writes pixels onto a clear screen
-  GLCD.ClearScreen();  
-  GLCD.DrawBitmap(getSet, 0,0, BLACK); //draw the bitmap at the given x,y position
-  GLCD.SelectFont(System5x7);
+  SoftwareSerial SpeakJetSerial =  SoftwareSerial(rxPin, txPin);
 }
 
 void loop(){
@@ -83,7 +108,6 @@ void checkSerial(){
   if(Serial.available()){
     unsigned char on = Serial.read();
     if(on=='0'){
-      GLCD.ClearScreen();
     }
     int o = (int)on;
     if((o - 87) >= stopPin && (o - 87) <= rightPin){
@@ -92,9 +116,53 @@ void checkSerial(){
     if(on == 'e'){
       Serial.println(angle);
     }
-    if(o >= sayingsStart && o <= sayingsStart + numSayings){
-      GLCD.ClearScreen();
-      GLCD.DrawBitmap(sayings[o - sayingsStart],0,0,BLACK);
+    if(o >= wordsStart && o <= wordsStart + numWords){
+      SpeakJetSerial.println("\0");  
+      //SpeakJetSerial.println(youhave);
+      switch(o){
+        case 102:
+          SpeakJetSerial.println(turnLeft);
+          break;
+        case 103:
+          SpeakJetSerial.println(turnRight);
+          break;
+        case 104:
+          SpeakJetSerial.println(walkForward);
+          break;
+         case 105:
+          SpeakJetSerial.println(stp);
+          break;
+         case 106:
+          SpeakJetSerial.println(deadmeat);
+          break;
+         case 107:
+          SpeakJetSerial.println(youhavewon);
+          break;
+         case 108 :
+          SpeakJetSerial.println(youhavedied);
+          break;
+         case 109:
+          SpeakJetSerial.println(have);
+          break;
+         case 110:
+          SpeakJetSerial.println(turn);
+          break;
+         case 111:
+          SpeakJetSerial.println(dead);
+          break;
+         case 112:
+          SpeakJetSerial.println(meat);
+          break;
+         case 113:
+          SpeakJetSerial.println(you);
+          break;
+         case 114:
+          SpeakJetSerial.println(died);
+          break; 
+         default:
+           break;
+      }
+      //Serial.println(sizeof(words[o-wordsStart]));  
     }
     //Serial.print(on);
   }
