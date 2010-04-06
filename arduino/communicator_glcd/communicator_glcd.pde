@@ -1,4 +1,4 @@
-po#include <math.h>
+#include <math.h>
 #include <ks0108.h>
 #include "Arial14.h"         // proportional font
 #include "SystemFont5x7.h"   // system font
@@ -53,7 +53,7 @@ int sayingsStart = 102;
 int numSayings = 11;
 
 void setup(){
-  Serial.begin(9600);
+  Serial.begin(115200);
   
   pinMode(EN_pin, OUTPUT);
   pinMode(CLK_pin, OUTPUT);

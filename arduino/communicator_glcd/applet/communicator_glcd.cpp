@@ -64,7 +64,7 @@ int sayingsStart = 102;
 int numSayings = 11;
 
 void setup(){
-  Serial.begin(9600);
+  Serial.begin(115200);
   
   pinMode(EN_pin, OUTPUT);
   pinMode(CLK_pin, OUTPUT);
