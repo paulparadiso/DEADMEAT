@@ -9,8 +9,8 @@ long lastOn = 0;
 int onPin;
 int bIsOn = 0;
 
-byte CLK_pin = 2;
-byte EN_pin = 3;
+byte CLK_pin = 10;
+byte EN_pin = 11;
 byte DIO_pin = 12;
 
 int X_Data = 0;
