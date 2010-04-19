@@ -24,6 +24,7 @@ Player::Player(Obstacles *_o){
 	printf("Player position = %d,%d\n",(int)pos.x,pos.y);
 	mind = new Mind(this,obs);
 	ranAstar = 0;
+	mind->update();
 }
 
 void Player::draw(){
@@ -35,12 +36,8 @@ void Player::draw(){
 	//ofLine(leftHand.x,leftHand.y,rightHand.x,rightHand.y);
 	ofNoFill();
 	ofTriangle(head.x,head.y, rightHand.x,rightHand.y,leftHand.x,leftHand.y);
-	if(!ranAstar){
-		//mind->update();
-		ranAstar = 1;
-	} else {
-		//mind->draw();
-	}
+	mind->update();
+	//mind->draw();
 }
 
 void Player::setShape(){

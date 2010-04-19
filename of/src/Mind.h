@@ -16,8 +16,11 @@
 #include "ofMain.h"
 #include <vector>
 
+#define STEP_SIZE 10
+
 class Player;
 class Astar;
+class Astar2;
 
 class Mind{
 public:
@@ -26,9 +29,10 @@ public:
 	void draw();
 	int getHeading();
 	int checkHeading();
+	ofxVec2f lastPos;
 	Obstacles *obs;
 	Player *body;
-	Astar *astar;
+	Astar2 *astar;
 };
 
 #endif

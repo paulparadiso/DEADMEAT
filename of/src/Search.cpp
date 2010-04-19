@@ -9,10 +9,10 @@
 
 #include "Search.h"
 
-Node::Node(ofxVec2f *_pos){
-	pos = *_pos;
-	parent = NULL;
-	child = NULL;
+Node::Node(int _x, int _y){
+	pos.set(_x,_y);
+	parent = (Node*)NULL;
+	vals.set(0.0,0.0,0.0);
 }
 
 Astar::Astar(Mind *_mind, int _w, int _h){
@@ -24,16 +24,17 @@ Astar::Astar(Mind *_mind, int _w, int _h){
 	alpha = 0.5;
 	edge = EDGE_SIZE;
 	mind = _mind;
-	currPos = mind->body->pos;
 	//printf("Current Position = %d,%d\n",(currPos.x,currPos.y);
 }
 
-void listInit(list_t *_list_p){
-	_list_p->num_elems = 0;
-	for(int i = 0; i < MAX_LIST; i++){
-		_list_p->elem[i] = (node_t *)NULL;
-	}
-	return;
+Astar2::Astar2(Mind *_mind, int _w, int _h){
+	w = _w;
+	h = _h;
+	grid = (char*)malloc(w*h*sizeof(char));
+	minCost = 1.0;
+	edge = EDGE_SIZE;
+	mind = _mind;
+	currPos = mind->body->pos;
 }
 
 int Astar::run(ofxVec2f _goal){
@@ -85,10 +86,6 @@ int Astar::run(ofxVec2f _goal){
 					}
 					tmp = listGet(&opened_list_p,succ_p->x, succ_p->y,REMOVE);
 					//if(tmp) free(tmp);
-					
-					tmp = listGet(&closed_list_p,succ_p->x, succ_p->y,REMOVE);
-					//if(tmp) free(tmp);
-					
 					succ_p->parent = (node_t *)curr_node_p;
 					listAdd(&opened_list_p, succ_p);
 				}
@@ -97,6 +94,59 @@ int Astar::run(ofxVec2f _goal){
 	}
 	printf("Solution Not Found.\n");
 	//cleanup(&opened_list_p,&closed_list_p);
+	return 0;
+}
+
+int Astar2::run(ofxVec2f _goal){
+	currPos = mind->body->pos;
+	goal = _goal;
+	Node *currNode;
+	nodeList openedList;
+	nodeList closedList;
+	listInit(&openedList);
+	listInit(&closedList);
+	Node *startNode = new Node((int)currPos.x,(int)currPos.y);
+	listAdd(&openedList,startNode);
+	while(!isListEmpty(&openedList)){
+		//printf("Have a node.\n");
+		currNode = findBest(&openedList);
+		//printf("currNode = %d,%d\n",currNode->getX(),currNode->getY());
+		(void*)listGet(&openedList,currNode->getX(),currNode->getY(),REMOVE);
+		listAdd(&closedList, currNode);
+		if((currNode->getX() == goal.x) && (currNode->getY() == goal.y)){
+			buildBestPath(currNode);
+			//printf("VECTORED ASTAR FOUND SOLUTION\n");
+			return 1;
+		} else {
+			Node *successor;
+			Node *tmp;
+			for(int i = 0; i < 4; i++){
+				successor = getSuccessorNode(currNode, i);
+				if(successor != (Node*)NULL){
+					//printf("Testing a node\n");
+					successor->setH(calculateH(successor));
+					successor->setG(currNode->getG() + calculateG(successor));
+					successor->setF(successor->getG() + successor->getH());
+					if(isListPresent(&openedList, successor->getX(), successor->getY())){
+					   tmp = listGet(&openedList, successor->getX(), successor->getY(),GET);
+					   if(tmp->getF() < successor->getF()){
+						   continue;
+					   }
+					}
+					if(isListPresent(&closedList, successor->getX(), successor->getY())){
+						tmp = listGet(&closedList, successor->getX(), successor->getY(), GET);
+						if(tmp->getF() < successor->getF()){
+							continue;
+						}
+					}
+					tmp = listGet(&openedList, successor->getX(), successor->getY(), REMOVE);
+					successor->parent = (Node*)currNode;
+					listAdd(&openedList, successor);
+				}
+			}
+		}
+	}
+	printf("Vectored Astar found no solution\n");
 	return 0;
 }
 
@@ -120,6 +170,21 @@ void Astar::buildBestPath(node_t *_walker){
 	//grid[start_node_p->x][start_node_p->y] = 'S';
 }
 
+void Astar2::buildBestPath(Node *_walker){
+	int x,y;
+	path.clear();
+	int gs = ((int)goal.x + (int)goal.y * w);
+	while(_walker->parent != (Node*)NULL){
+		path.push_back(ofxVec2f((float)_walker->getX(),(float)_walker->getY()));
+		_walker = (Node*)_walker->parent;
+	}
+	//printf("Have Path\n");
+	vector<ofxVec2f>::iterator pi;
+	//for(pi = path.begin(); pi != path.end() -1; ++pi){
+//		printf("\t%f,%f\n",pi->x,pi->y);
+//	}
+}
+	
 node_t * Astar::findBest(list_t *_list_p){
 	int i;
 	int best = -1;
@@ -139,10 +204,25 @@ node_t * Astar::findBest(list_t *_list_p){
 	return _list_p->elem[best];
 }
 
+Node * Astar2::findBest(nodeList *_list){
+	nodeList::iterator ni;
+	ni = _list->begin();
+	Node *best = (*ni++);
+	for(; ni != _list->end(); ++ni){
+		if((*ni)->getF() < best->getF())
+			best = (*ni);
+	}
+	return best;
+}
+
 double Astar::calculateG(node_t *_node_p){
 	double g;
 	g = 1.0 + ALPHA * (_node_p->g - 1.0);
 	return g;
+}
+
+double Astar2::calculateG(Node *_node){
+	return 1.0 + (ALPHA * (_node->getG() - 1.0));
 }
 
 double Astar::calculateH(node_t *_node_p){
@@ -151,6 +231,12 @@ double Astar::calculateH(node_t *_node_p){
 				 (abs((double)_node_p->x - (double)goal.x) +
 				  abs((double)_node_p->y - (double)goal.y)) );
 	return h;
+}
+
+double Astar2::calculateH(Node *_node){
+	return (double)(MIN_COST *
+					(abs((double)_node->getX() - (double)goal.x)+
+					 abs((double)_node->getY() - (double)goal.y)));
 }
 
 void Astar::listInit(list_t *_list_p){
@@ -162,9 +248,18 @@ void Astar::listInit(list_t *_list_p){
 	return;
 }
 
+
+void Astar2::listInit(nodeList *_list){
+	_list->clear();
+}
+
 int Astar::isListEmpty(list_t *_list_p){
 	if(_list_p->num_elems == 0) return 1;
 	else return 0;
+}
+
+int Astar2::isListEmpty(nodeList *_list){
+	return _list->empty();
 }
 
 int Astar::isListPresent(list_t *_list_p, int _x, int _y){
@@ -179,6 +274,15 @@ int Astar::isListPresent(list_t *_list_p, int _x, int _y){
 	return 0;
 }
 
+int Astar2::isListPresent(nodeList *_list, int _x, int _y){
+	nodeList::iterator ni;
+	for(ni = _list->begin(); ni != _list->begin(); ++ni){
+		if (((int)(*ni)->getX() == _x) && ((int)(*ni)->getY() == _y))
+			return 1;
+	}
+	return 0;
+}
+
 void Astar::listAdd(list_t *_list_p,  node_t *_elem_p){
 	for(int i = 0; i < MAX_LIST; i++){
 		if (_list_p->elem[i] == (node_t *)NULL) {
@@ -188,6 +292,10 @@ void Astar::listAdd(list_t *_list_p,  node_t *_elem_p){
 		}
 	}
 	return;
+}
+
+void Astar2::listAdd(nodeList *_list, Node *_node){
+	_list->push_back(_node);
 }
 
 node_t * Astar::listGet(list_t *_list_p, int _x, int _y, int _remove){
@@ -207,6 +315,19 @@ node_t * Astar::listGet(list_t *_list_p, int _x, int _y, int _remove){
 	}
 	//printf("LISTGET RETURNING %d.\n",node);
 	return node;
+}
+
+Node *Astar2::listGet(nodeList *_list, int _x, int _y, int _remove){
+	Node *tmpNode;
+	nodeList::iterator ni;
+	for(ni = _list->begin(); ni != _list->end() - 1; ni++){
+		if(((*ni)->getX() == _x) && ((*ni)->getY() == _y)){
+			tmpNode = (*ni);
+			if(_remove)
+				_list->erase(*ni);
+		}
+	}
+	return tmpNode;
 }
 
 node_t * Astar::allocateNode(int _x, int _y){
@@ -233,6 +354,19 @@ node_t * Astar::getSuccessorNode(node_t *_curr_node, int _i){
 		//printf("Made new node at %d,%d\n",succ_p->x,succ_p->y);
 	}
 	return succ_p;
+}
+
+Node * Astar2::getSuccessorNode(Node *_currNode, int _i){
+	Node *node = (Node*)NULL;
+	int x,y;
+								   
+	x = (int)_currNode->getX() + succ[_i].x * STEP_SIZE;
+	y = (int)_currNode->getY() + succ[_i].y * STEP_SIZE;
+	
+	if(mind->obs->isWalkable(x, y)){
+		node = new Node(x,y);
+	}
+	return node;
 }
 
 

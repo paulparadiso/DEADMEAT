@@ -12,29 +12,29 @@
 Mind::Mind(Player *_p, Obstacles *_o){
 	body = _p;
 	obs = _o;
-	astar = new Astar(this,ofGetWidth(),ofGetHeight());
+	astar = new Astar2(this,ofGetWidth(),ofGetHeight());
+	lastPos.set(0.0,0.0);
 }
 
 void Mind::update(){
 	//ofxVec2f futurePos;
 	//Code goes here.
 	//body->pos = futurePos;
-	if(astar->run(body->goal)){
+	if(abs(body->pos.x - lastPos.x) > STEP_SIZE || abs(body->pos.y - lastPos.y) > STEP_SIZE){
+		astar->run(body->goal);
 		printf("RAN ASTAR\n");
 		draw();
+		lastPos = body->pos;
 	}
-	else {
-		printf("ASTAR FAIL\n");
-	}
-	
 }
 
 int Mind::checkHeading(){
 }
 
 void Mind::draw(){
+	//printf("Mind drawing.\n");
 	vector<ofxVec2f>::iterator iter;
 	for(iter = astar->path.begin();iter != astar->path.end()-1;iter++){
-		ofLine((*iter).x, (*iter).y, (*iter+1).x, (*iter+1).y);
+		ofLine(iter->x, iter->y, (iter+1)->x, (iter+1)->y);
 	}
 }
