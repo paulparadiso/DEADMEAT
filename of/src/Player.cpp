@@ -36,8 +36,8 @@ void Player::draw(){
 	//ofLine(leftHand.x,leftHand.y,rightHand.x,rightHand.y);
 	ofNoFill();
 	ofTriangle(head.x,head.y, rightHand.x,rightHand.y,leftHand.x,leftHand.y);
-	mind->update();
-	//mind->draw();
+	//mind->update();
+	mind->draw();
 }
 
 void Player::setShape(){

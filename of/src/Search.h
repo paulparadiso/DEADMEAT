@@ -69,33 +69,6 @@ public:
 
 typedef vector<Node*> nodeList;
 
-class Astar{
-public:
-	Astar(Mind *_mind,int _w, int _h);	
-	int run(ofxVec2f _goal);
-	node_t * findBest(list_t *_list_p);
-	void listInit(list_t *_list_p);
-	double calculateG(node_t *_node_p);
-	double calculateH(node_t *_node_p);
-	int isListEmpty(list_t *_list_p);
-	void cleanup(list_t *_o_list_p,list_t *_c_list_p); 
-	int isListPresent(list_t *_list_p, int _x, int _y);
-	void listAdd(list_t *_list_p,  node_t *_elem_p);
-	node_t * listGet(list_t *_list_p, int _x, int _y, int _remove);
-	node_t * allocateNode(int _x, int _y);
-	node_t * getSuccessorNode(node_t *_curr_node, int _i);
-	void buildBestPath(node_t *_walker);
-	ofxVec2f currPos;
-	ofxVec2f goal;
-	Mind *mind;
-	vector <ofxVec2f> path;
-	char *grid;
-	int w,h;
-	int edge;
-	double minCost;
-	double alpha;
-};
-
 class Astar2{
 public:
 	Astar2(Mind *_mind, int _w, int _h);
@@ -105,22 +78,31 @@ public:
 	double calculateG(Node* _node);
 	double calculateH(Node* _node);
 	int isListEmpty(nodeList *_list);
-	void cleanup(vector<nodeList> *_o_list, vector<Node*> *_c_list);
 	int isListPresent(nodeList *_list, int _x, int _y);
-	void listAdd(nodeList *_list, Node * _node);
+	Node * listAdd(nodeList *_list, Node *_node,int _l);
 	Node * listGet(nodeList *_list, int _x, int _y, int _remove);
-	Node * allocateNode(int _x, int _y);
+	void listRemove(nodeList, int _x, int _y);
+	Node allocateNode(int _x, int _y);
 	Node * getSuccessorNode(Node *_curr_node, int _i);
 	void buildBestPath(Node *_walker);
+	void initSpace();
+	void listSwitch(nodeList *_outList, nodeList *_inList, Node * _node);
+	void listRemove(nodeList *_list, int _x, int _y);
+	Node * spaceGet(int _x, int _y);
+	void spaceSet(int _x, int _y, Node _node);
 	ofxVec2f currPos;
 	ofxVec2f goal;
 	Mind *mind;
+	nodeList openedList;
+	nodeList closedList;
 	vector <ofxVec2f> path;
+	vector<Node>space;
 	char *grid;
 	int w,h;
 	int edge;
 	double minCost;
 	double alpha;
+	int spaceInited;
 };
 
 
