@@ -12,9 +12,13 @@ void testApp::setup(){
 	serial[1].setup(SERIAL_PORT_A,115200);
 	//serial.setup("/dev/tty.usbserial-A600aimy",115200);
 	obstacles->makeObstacles("/Users/pp/obstacles.txt");
-	player[0] = new Player(obstacles);
-	player[1] = new Player(obstacles);
-	player[1]->setPos(ofGetWidth() - 50, ofGetHeight()/2);
+	player[0] = new Player(obstacles, &serial[0]);
+	player[1] = new Player(obstacles, &serial[1]);
+	//player[1]->setPos(ofGetWidth() - 50, ofGetHeight()/2);
+	player[0]->setGoal(ofGetWidth() - 50, ofGetHeight()/2);
+	player[1]->setGoal(50, ofGetHeight()/2);
+	player[0]->setColor(0,0,255);
+	player[1]->setColor(255, 255, 0);
 	commandMap.insert(make_pair("left,walk",'f'));
 	commandMap.insert(make_pair("right,walk",'g'));
 	commandMap.insert(make_pair("up,walk",'h'));
@@ -28,7 +32,7 @@ void testApp::update(){
 	eye->update();
 	//player[0]->setHeading(&serial[0]);
 	for(int i = 0; i < 2; i++){
-		player[i]->setPosFromCamera(eye->getColorPos(i),320,240);
+		//player[i]->setPosFromCamera(eye->getColorPos(i),320,240);
 	}
 }
 

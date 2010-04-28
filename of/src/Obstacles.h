@@ -26,7 +26,7 @@ public:
 	void draw();
 	void setColor(float _r, float _g, float _b);
 	vector <ofxVec2f> allPoints;
-	int isWalkable(int _x, int _y);
+	int isWalkable(int _xA, int _yA, int _xB, int _yB, int _sz);
 	int edge;
 
 private:
@@ -34,8 +34,7 @@ private:
 	void makePoints();
 	int getCommon(ofxVec2f _a, ofxVec2f _b);	
 	typedef vector <ofxVec2f> obPoints;
-	vector <obPoints> allObstacles;
-	
+	vector <obPoints> allObstacles;	
 	ofxVec3f color;
 };
 

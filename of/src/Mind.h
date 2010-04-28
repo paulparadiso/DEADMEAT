@@ -14,9 +14,13 @@
 #include "Obstacles.h"
 #include "ofxVectorMath.h"
 #include "ofMain.h"
+#include "testApp.h"
 #include <vector>
 
-#define STEP_SIZE 10
+#define STEP_SIZE 40
+#define MAX_SEARCH 300
+//distance player can wander from path before new path is generated.
+#define TOLERANCE 40
 
 class Player;
 class Astar;
@@ -29,6 +33,9 @@ public:
 	void draw();
 	int getHeading();
 	int checkHeading();
+	int isSearching;
+	ofxVec2f getNearestPoint();
+	void guidePlayer(ofxVec2f *_target);
 	ofxVec2f lastPos;
 	Obstacles *obs;
 	Player *body;

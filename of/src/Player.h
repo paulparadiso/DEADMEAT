@@ -23,14 +23,16 @@ class Mind;
 class Player{
 
 public:
-	Player(Obstacles *_o);
+	Player(Obstacles *_o, ofSerial *_port);
 	void draw();
+	void update();
 	void setPos(float _x, float _y);
 	void setPosFromCamera(ofxVec2f *_c_pos, int _cW, int _cH);
 	ofxVec2f getPos();
 	void setColor(float _r, float _g, float _b);
 	void setSize(int _s);
-	void setHeading(ofSerial *_ser);
+	void setHeading(float _heading);
+	void updateHeading();
 	int getHeading();
 	void setShape();
 	void setGoal(float _x, float _y);
@@ -44,6 +46,7 @@ public:
 	ofxVec2f rightHand;
 	ofxVec2f leftHand;
 	ofxVec2f goal;
+	ofSerial *port;
 	int heading;
 	int width;
 	int length;

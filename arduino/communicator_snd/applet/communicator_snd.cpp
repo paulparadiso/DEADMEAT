@@ -20,9 +20,14 @@ long lastOn = 0;
 int onPin;
 int bIsOn = 0;
 
-byte CLK_pin = 10;
-byte EN_pin = 11;
-byte DIO_pin = 12;
+byte CLK_pin = 7;
+byte EN_pin = 8;
+byte DIO_pin = 9;
+
+//byte CLK_pin = 10;
+//byte EN_pin = 11;
+//byte DIO_pin = 12;
+
 
 int X_Data = 0;
 int Y_Data = 0;

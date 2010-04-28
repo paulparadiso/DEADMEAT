@@ -39,7 +39,7 @@ void Obstacles::makeObstacles(string _inFile){
 			}
 			allObstacles.push_back(newPoints);
 		}
-		//cout<<allObstacles.size()<<endl;
+		cout<<"All obstacles had "<<allObstacles.size()<<endl;
 		makePoints();
 		draw();
 	} else {
@@ -57,16 +57,34 @@ void Obstacles::draw(){
 	}
 }
 
-int Obstacles::isWalkable(int _x, int _y){
-	if(_x < 0 || _x > ofGetWidth())
+int Obstacles::isWalkable(int _xA, int _yA, int _xB, int _yB, int _sz){
+	if(_xA <= 0 || _xA >= ofGetWidth())
 		return 0;
-	if(_y < 0 || _y > ofGetHeight())
+	if(_yA <= 0 || _yA >= ofGetHeight())
 		return 0;
-	ofxVec2f *tst = new ofxVec2f(_x,_y);
+	int inX = 0;
+	int inY = 0;
+	ofxVec2f *tst = new ofxVec2f(_xA,_yA);
 	vector<ofxVec2f>::iterator vecIter;
 	for(vecIter = allPoints.begin();vecIter != allPoints.end(); vecIter++){
 		ofxVec2f tt = *(vecIter);
-		if(tst->distance(tt) < edge * 1)
+		if(_xA < _xB){
+			if(tt.x > _xA && tt.x < _xB)
+				inX = 1;
+		} else {
+			if(tt.x > _xB && tt.x < _xA)
+				inX = 1;
+		}
+		if(_yA < _yB){
+			if(tt.x > _yA && tt.x < _yB)
+				inY = 1;
+		} else {
+			if(tt.x > _yB && tt.x < _yA)
+				inY = 1;
+		}
+		if(inX && inY)
+			return 0;
+		if(tst->distance(tt) < edge)
 			return 0;
 	}
 	return 1;

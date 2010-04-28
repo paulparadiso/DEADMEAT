@@ -13,6 +13,9 @@
 
 #define SERIAL_PORT_A "/dev/tty.FireFly-1655-SPP-1"
 #define SERIAL_PORT_B "/dev/tty.FireFly-1655-SPP-1"
+#define FAKING 1
+
+class Player;
 
 class testApp : public ofBaseApp{
 

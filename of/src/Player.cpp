@@ -9,12 +9,13 @@
 
 #include "Player.h"
 
-Player::Player(Obstacles *_o){
-	setPos(50,400);
-	//setGoal(ofGetWidth()-50,ofGetHeight()/2);
-	setGoal(10,40);
+Player::Player(Obstacles *_o, ofSerial *_port){
+	//setPos(50,400);
+	setGoal(ofGetWidth()-40,ofGetHeight()/2 + 10);
+	//setGoal(10,40);
 	setColor(255,0,0);
 	setSize(20);
+	port = _port;
 	//setHeading(0);
 	heading = 0;
 	width = 40;
@@ -27,6 +28,10 @@ Player::Player(Obstacles *_o){
 	mind->update();
 }
 
+void Player::update(){
+	mind->update();	
+}
+
 void Player::draw(){
 	ofSetColor(color.x, color.y, color.z);
 	ofFill();
@@ -36,7 +41,6 @@ void Player::draw(){
 	//ofLine(leftHand.x,leftHand.y,rightHand.x,rightHand.y);
 	ofNoFill();
 	ofTriangle(head.x,head.y, rightHand.x,rightHand.y,leftHand.x,leftHand.y);
-	//mind->update();
 	mind->draw();
 }
 
@@ -73,13 +77,16 @@ void Player::setGoal(float _x, float _y){
 	goal.set(_x,_y);
 }
 
-void Player::setHeading(ofSerial *_ser){
+void Player::updateHeading(){
+	/*
+	 Request current heading of human player.
+	 */
 	string newAngle;
 	unsigned char newByte = 0;
-	_ser->writeByte('e');
+	port->writeByte('e');
 	ofSleepMillis(100);
 	while(newByte != '\n'){
-		newByte = _ser->readByte();
+		newByte = port->readByte();
 		if(newByte != 0xff){
 			newAngle.append((char *)&newByte,1);
 		}
@@ -91,6 +98,17 @@ void Player::setHeading(ofSerial *_ser){
 
 int Player::getHeading(){
 	return heading;
+}
+
+void Player::setHeading(float _heading){
+	/*
+	 Tell player which direction to turn.
+	 */
+	if(!FAKING){
+		port->writeByte('f');
+	} else {
+		heading = _heading;
+	}
 }
 
 int Player::getWidth(){
