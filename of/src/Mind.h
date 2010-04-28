@@ -17,10 +17,11 @@
 #include "testApp.h"
 #include <vector>
 
-#define STEP_SIZE 40
+#define STEP_SIZE 20
 #define MAX_SEARCH 300
 //distance player can wander from path before new path is generated.
-#define TOLERANCE 40
+#define TOLERANCE 20
+#define MOVE_DELAY 2000
 
 class Player;
 class Astar;
@@ -34,6 +35,7 @@ public:
 	int getHeading();
 	int checkHeading();
 	int isSearching;
+	int timeSinceLastCommand;
 	ofxVec2f getNearestPoint();
 	void guidePlayer(ofxVec2f *_target);
 	ofxVec2f lastPos;

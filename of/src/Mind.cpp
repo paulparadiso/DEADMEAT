@@ -15,6 +15,7 @@ Mind::Mind(Player *_p, Obstacles *_o){
 	astar = new Astar2(this,ofGetWidth(),ofGetHeight());
 	lastPos.set(0.0,0.0);
 	isSearching = 1;
+	timeSinceLastCommand = 0;
 }
 
 void Mind::update(){
@@ -37,10 +38,18 @@ void Mind::update(){
 		//draw();
 		}
 	}
-	//if(astar->pathGenerated){
-//		ofxVec2f nearest = getNearestPoint();
-//		guidePlayer(&nearest);
-//	}
+	if(astar->pathGenerated){
+		if(ofGetElapsedTimeMillis() - timeSinceLastCommand > MOVE_DELAY){
+			ofxVec2f nearest = getNearestPoint();
+			guidePlayer(&nearest);
+			timeSinceLastCommand = ofGetElapsedTimeMillis();
+		}
+	}
+	if(obs->isColliding(body->pos, 5)){
+		body->strength -= HIT_LOSS;
+	}
+	if(body->strength <= 0)
+		body->isDead = 1;
 }
 
 ofxVec2f Mind::getNearestPoint(){
@@ -59,7 +68,15 @@ ofxVec2f Mind::getNearestPoint(){
 
 void Mind::guidePlayer(ofxVec2f *_target){
 	float angle = atan2(body->pos.x - _target->x, body->pos.y - _target->y);
-	body->setHeading(angle);
+	printf("Setting heading to %f\n",angle);
+	if(!FAKING){
+		if(abs(angle - (DEG_TO_RAD * (body->heading - body->offset)) < HEADING_DIFF)){
+			body->walk();
+		} else {
+			body->setHeading(angle * RAD_TO_DEG);
+		}
+	}
+	body->setHeading(angle * RAD_TO_DEG);
 }
 
 void Mind::draw(){

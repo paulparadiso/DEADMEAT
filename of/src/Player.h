@@ -38,6 +38,9 @@ public:
 	void setGoal(float _x, float _y);
 	int getWidth();
 	int getLength();
+	void reset();
+	void setOffset();
+	void walk();
 	int size;
 	int ranAstar;
 	ofxVec3f color;
@@ -47,7 +50,10 @@ public:
 	ofxVec2f leftHand;
 	ofxVec2f goal;
 	ofSerial *port;
+	int isDead;
+	int strength;
 	int heading;
+	float offset;
 	int width;
 	int length;
 	Mind *mind;

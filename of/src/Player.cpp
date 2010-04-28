@@ -11,9 +11,9 @@
 
 Player::Player(Obstacles *_o, ofSerial *_port){
 	//setPos(50,400);
-	setGoal(ofGetWidth()-40,ofGetHeight()/2 + 10);
+	//setGoal(ofGetWidth()-40,ofGetHeight()/2 + 10);
 	//setGoal(10,40);
-	setColor(255,0,0);
+	//setColor(255,0,0);
 	setSize(20);
 	port = _port;
 	//setHeading(0);
@@ -25,7 +25,8 @@ Player::Player(Obstacles *_o, ofSerial *_port){
 	printf("Player position = %d,%d\n",(int)pos.x,pos.y);
 	mind = new Mind(this,obs);
 	ranAstar = 0;
-	mind->update();
+	isDead = 1;
+	//mind->update();
 }
 
 void Player::update(){
@@ -40,8 +41,15 @@ void Player::draw(){
 	//ofLine(pos.x,pos.y,pos.x + (cos(ofDegToRad(heading)) * length), pos.y + (sin(ofDegToRad(heading)) * length));
 	//ofLine(leftHand.x,leftHand.y,rightHand.x,rightHand.y);
 	ofNoFill();
+	ofSetLineWidth(2);
 	ofTriangle(head.x,head.y, rightHand.x,rightHand.y,leftHand.x,leftHand.y);
+	ofSetLineWidth(1);
 	mind->draw();
+}
+
+void Player::reset(){
+	strength = 90;
+	isDead = 0;
 }
 
 void Player::setShape(){
@@ -81,23 +89,32 @@ void Player::updateHeading(){
 	/*
 	 Request current heading of human player.
 	 */
-	string newAngle;
-	unsigned char newByte = 0;
-	port->writeByte('e');
-	ofSleepMillis(100);
-	while(newByte != '\n'){
-		newByte = port->readByte();
-		if(newByte != 0xff){
-			newAngle.append((char *)&newByte,1);
+	if(!FAKING){			
+		string newAngle;
+		int newHeading;
+		unsigned char newByte = 0;
+		port->writeByte('e');
+		ofSleepMillis(100);
+		while(newByte != '\n'){
+			newByte = port->readByte();
+			if(newByte != 0xff){
+				newAngle.append((char *)&newByte,1);
+			}
 		}
+		istringstream stream(newAngle);
+		stream >> newHeading;
+		if(newHeading != 0)
+			heading = newHeading;
+		newAngle.clear();
 	}
-	istringstream stream(newAngle);
-	stream >> heading;
-	newAngle.clear();
 }
 
 int Player::getHeading(){
 	return heading;
+}
+
+void Player::setOffset(){
+	offset = heading;
 }
 
 void Player::setHeading(float _heading){
@@ -105,10 +122,18 @@ void Player::setHeading(float _heading){
 	 Tell player which direction to turn.
 	 */
 	if(!FAKING){
-		port->writeByte('f');
+		if(_heading < heading){
+			port->writeByte('f');
+		} else {
+			port->writeByte('g');
+		}
 	} else {
 		heading = _heading;
 	}
+}
+
+void Player::walk(){
+	port->writeByte('h');
 }
 
 int Player::getWidth(){

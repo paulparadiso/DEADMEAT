@@ -60,7 +60,7 @@ int Astar2::run(ofxVec2f _goal){
 		Node * currNode = openedList.back();
 		lastPos.set(currNode->getX(),currNode->getY());
 		numSearched++;
-		printf("currNode = %d,%d\n",currNode->getX(),currNode->getY());
+		//printf("currNode = %d,%d\n",currNode->getX(),currNode->getY());
 		if(isGoalNode(currNode)){
 			printf("Found best path\n");
 			buildBestPath(currNode);

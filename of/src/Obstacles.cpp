@@ -90,6 +90,16 @@ int Obstacles::isWalkable(int _xA, int _yA, int _xB, int _yB, int _sz){
 	return 1;
 }
 
+int Obstacles::isColliding(ofxVec2f _tst, int _e){
+	vector<ofxVec2f>::iterator vecIter;
+	for(vecIter = allPoints.begin();vecIter != allPoints.end(); vecIter++){
+		ofxVec2f tt = *(vecIter);
+		if(_tst.distance(tt) < _e)
+			return 1;
+	}
+	return 0;
+}
+
 int Obstacles::getCommon(ofxVec2f _a, ofxVec2f _b){
 	if((_a.y == _b.y) && (_a.x != _b.x)){
 		//cout << "COMMON" << endl;

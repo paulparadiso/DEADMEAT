@@ -27,6 +27,7 @@ public:
 	void setColor(float _r, float _g, float _b);
 	vector <ofxVec2f> allPoints;
 	int isWalkable(int _xA, int _yA, int _xB, int _yB, int _sz);
+	int isColliding(ofxVec2f _tst, int _e);
 	int edge;
 
 private:
