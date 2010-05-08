@@ -30,7 +30,7 @@ class Astar2;
 class Mind{
 public:
 	Mind(Player *_p, Obstacles *_o);
-	void update();
+	void update(ofxVec2f _goal);
 	void draw();
 	int getHeading();
 	int checkHeading();

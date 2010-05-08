@@ -62,7 +62,7 @@ int Astar2::run(ofxVec2f _goal){
 		numSearched++;
 		//printf("currNode = %d,%d\n",currNode->getX(),currNode->getY());
 		if(isGoalNode(currNode)){
-			printf("Found best path\n");
+			//printf("Found best path\n");
 			buildBestPath(currNode);
 			atStart = 1;
 			pathGenerated = 1;
@@ -134,7 +134,7 @@ void Astar2::buildBestPath(Node *_walker){
 	}
 	path.resize(c);
 	path.clear();
-	printf("Making Path.\n");
+	//printf("Making Path.\n");
 	int gs = ((int)goal.x + (int)goal.y * w);
 	while(_walker->parent != (Node*)NULL){
 		path.push_back(ofxVec2f((float)_walker->getX(),(float)_walker->getY()));

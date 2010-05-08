@@ -22,7 +22,7 @@ Gun::Gun(int _x, int _y, Obstacles *_obs){
 void Gun::aim(Player *_p){
 	//angle = atan2(_p->pos.x - pos.x, _p->pos.y - pos.y);
 	angle += (move * direction);
-	printf("Gun angle = %f\n",angle);
+	//printf("Gun angle = %f\n",angle);
 	if((angle < aMin) || (angle > aMax)){
 		switchDirections();
 	}
@@ -41,7 +41,7 @@ void Gun::update(){
 	if(ofGetElapsedTimeMillis() - timeSinceLastShot > SHOT_DELAY){
 		ofxVec2f shooting(pos.x + cos(angle) * (s*2),pos.y + sin(angle)*(s*2));
 		Bullet bul(angle,speed,shooting);
-		bullets.push_back(bul);
+		//bullets.push_back(bul);
 		timeSinceLastShot = ofGetElapsedTimeMillis();
 	}
 }

@@ -14,7 +14,7 @@
 #include "ofxVectorMath.h"
 
 
-#define NUM_COLORS 2
+#define NUM_COLORS 1
 #define CAM_ID 3
 
 class color

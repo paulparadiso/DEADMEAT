@@ -38,23 +38,28 @@ class testApp : public ofBaseApp{
 		void windowResized(int w, int h);
 
 		Obstacles *obstacles;
-		Player *player[2];
-		Gun *guns[2];
-
+		Player *player;
+		//Gun *guns[2];
 		map<string,char> commandMap;
-
-		ofSerial serial[2];
-		
+		ofSerial serial;
 		int drawEye;
-	
 		Eye *eye;
-	
 		ofTrueTypeFont  franklinBook;
-		
 		int isRunning;
-		
 		string output;
 		
+		ofVideoGrabber grabber;
+		ofxCvColorImage convert;
+		ofxCvGrayscaleImage gray;
+	
+		int width, height, bpp;
+		size_t        numPixels;
+		size_t        numBytesRead;
+		unsigned char *cameraBuffer;
+	
+		bool bDraw;
+		bool useBCH;
+		ofTrueTypeFont idNumb;
 };
 
 #endif

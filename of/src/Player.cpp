@@ -23,14 +23,20 @@ Player::Player(Obstacles *_o, ofSerial *_port){
 	setShape();
 	obs = _o;
 	printf("Player position = %d,%d\n",(int)pos.x,pos.y);
-	mind = new Mind(this,obs);
+	goodMind = new Mind(this,obs);
+	badMind = new Mind(this,obs);
 	ranAstar = 0;
 	isDead = 1;
-	//mind->update();
+	offset = 0;
+	bad.set(50,ofGetHeight()/2);
+	//goodMind->update();
 }
 
 void Player::update(){
-	mind->update();	
+	
+	updateHeading();
+	goodMind->update(goal);	
+	//badMind->update(bad);
 }
 
 void Player::draw(){
@@ -44,7 +50,8 @@ void Player::draw(){
 	ofSetLineWidth(2);
 	ofTriangle(head.x,head.y, rightHand.x,rightHand.y,leftHand.x,leftHand.y);
 	ofSetLineWidth(1);
-	mind->draw();
+	goodMind->draw();
+	//badMind->draw();
 }
 
 void Player::reset(){
@@ -54,8 +61,8 @@ void Player::reset(){
 
 void Player::setShape(){
 	head.set(pos.x + (cos(ofDegToRad(heading)) * length), pos.y + (sin(ofDegToRad(heading)) * length));
-	rightHand.set(pos.x + (cos(ofDegToRad(heading + 90)) * width/2), pos.y + (sin(ofDegToRad(heading +90)) * width/2));
-	leftHand.set(pos.x + (cos(ofDegToRad(heading + 270)) * width/2), pos.y + (sin(ofDegToRad(heading +270)) * width/2));
+	rightHand.set(pos.x + (cos(ofDegToRad((heading) + 90)) * width/2), pos.y + (sin(ofDegToRad((heading) +90)) * width/2));
+	leftHand.set(pos.x + (cos(ofDegToRad((heading) + 270)) * width/2), pos.y + (sin(ofDegToRad((heading) +270)) * width/2));
 }
 
 void Player::setPos(float _x, float _y){
@@ -101,6 +108,7 @@ void Player::updateHeading(){
 				newAngle.append((char *)&newByte,1);
 			}
 		}
+		printf("New heading = %s\n",newAngle.c_str());
 		istringstream stream(newAngle);
 		stream >> newHeading;
 		if(newHeading != 0)
@@ -128,7 +136,7 @@ void Player::setHeading(float _heading){
 			port->writeByte('g');
 		}
 	} else {
-		heading = _heading;
+		heading = ofRadToDeg(_heading);
 	}
 }
 

@@ -18,23 +18,23 @@ Mind::Mind(Player *_p, Obstacles *_o){
 	timeSinceLastCommand = 0;
 }
 
-void Mind::update(){
+void Mind::update(ofxVec2f _goal){
 	//ofxVec2f futurePos;
 	//Code goes here.
 	//body->pos = futurePos;
 	if(isSearching){
-		printf("Starting search\n");
-		if(astar->run(body->goal)){
+		//printf("Starting search\n");
+		if(astar->run(_goal)){
 			isSearching = 0;
-			printf("ASTAR SUCCESS\n");
+			//printf("ASTAR SUCCESS\n");
 			lastPos = body->pos;
 		} 	
 	}
 	if(abs(body->pos.x - lastPos.x) > STEP_SIZE || abs(body->pos.y - lastPos.y) > STEP_SIZE){
 		if(!isSearching){
 			isSearching = 1;
-			printf("Turning on a*\n");
-		printf("RAN ASTAR\n");
+			//printf("Turning on a*\n");
+		//printf("RAN ASTAR\n");
 		//draw();
 		}
 	}
@@ -68,7 +68,7 @@ ofxVec2f Mind::getNearestPoint(){
 
 void Mind::guidePlayer(ofxVec2f *_target){
 	float angle = atan2(body->pos.x - _target->x, body->pos.y - _target->y);
-	printf("Setting heading to %f\n",angle);
+	//printf("Setting heading to %f\n",angle);
 	if(!FAKING){
 		if(abs(angle - (DEG_TO_RAD * (body->heading - body->offset)) < HEADING_DIFF)){
 			body->walk();

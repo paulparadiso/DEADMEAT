@@ -49,6 +49,7 @@ public:
 	ofxVec2f rightHand;
 	ofxVec2f leftHand;
 	ofxVec2f goal;
+	ofxVec2f bad;
 	ofSerial *port;
 	int isDead;
 	int strength;
@@ -56,7 +57,8 @@ public:
 	float offset;
 	int width;
 	int length;
-	Mind *mind;
+	Mind *goodMind;
+	Mind *badMind;
 	Obstacles *obs;
 	
 private:
